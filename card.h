@@ -84,7 +84,7 @@ class ActionCard : public Card {
         int getActionType() { return this->actionType; };
 
         void setColour(Colour colour) {
-            if (this->actionType == Wild || this->actionType == WildDraw4) {
+            if (this->colour == Unknown) {
                 this->colour = colour;
             }
         }
