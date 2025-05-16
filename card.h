@@ -67,9 +67,17 @@ class ActionCard : public Card {
         ActionType actionType;
 
     public:
+        // Skip, Reverse, Draw2
         ActionCard(Colour colour, ActionType actionType) {
             this->type = Action;
             this->colour = colour;
+            this->actionType = actionType;
+        }
+
+        // Wild, WildDraw4
+        ActionCard(ActionType actionType) {
+            this->type = Action;
+            this->colour = Unknown;
             this->actionType = actionType;
         }
 
