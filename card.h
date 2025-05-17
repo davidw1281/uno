@@ -1,16 +1,3 @@
-enum CardType {
-    Number,
-    Action
-};
-
-enum ActionType {
-    Skip,
-    Reverse,
-    Draw2,
-    Wild,
-    WildDraw4
-};
-
 enum Colour {
     Red,
     Blue,
@@ -19,59 +6,57 @@ enum Colour {
     Unknown
 };
 
+enum Symbol {
+    Zero,
+    One,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Skip,
+    Reverse,
+    Draw2,
+    Wild,
+    WildDraw4
+};
+
+enum CardType {
+    Number,
+    Action
+};
+
+
 class Card {
     protected:
-        const CardType type;
         Colour colour;
+        const Symbol symbol;
+        CardType cardType;
 
     public:
-        Card(Colour colour, CardType type) : colour(colour), type(type) {}
+        Card(Colour colour, Symbol symbol) : colour(colour), symbol(symbol) {
+            switch (symbol) {
+                case Skip:
+                case Reverse:
+                case Draw2:
+                    cardType = Action;
+                    break;
 
-        virtual bool doesMatch(Card cardOnPile) = 0;
+                default:
+                    cardType = Number;
+            }
+        }
+
+        // Wild and WildDraw4
+        Card(Symbol symbol) : symbol(symbol) {
+            colour = Unknown;
+            cardType = Action;
+        }
+
         Colour getColour() { return colour; }
-        CardType getType() { return type; }
-};
-
-class NumberCard : public Card {
-    private:
-        const int number;
-
-    public:
-        NumberCard(Colour colour, int number) : Card(colour, Number), number(number) {}
-
-        int getNumber() { return number; }
-
-        bool doesMatch(NumberCard cardOnPile) {
-            if (getColour() == cardOnPile.getColour()) { 
-                return true; 
-            } else if (getNumber() == cardOnPile.getNumber()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        bool doesMatch(ActionCard cardOnPile) {
-            if (getColour() == cardOnPile.getColour()) { 
-                return true; 
-            } else {
-                return false;
-            }
-        }
-};
-
-class ActionCard : public Card {
-    private:
-        const ActionType actionType;
-
-    public:
-        // Skip, Reverse, Draw2
-        ActionCard(Colour colour, ActionType actionType) : Card(colour, Action), actionType(actionType) {}
-
-        // Wild, WildDraw4
-        ActionCard(ActionType actionType) : Card(Unknown, Action), actionType(actionType) {}
-
-        int getActionType() { return actionType; };
 
         void setColour(Colour colour) {
             if (this->colour == Unknown) {
@@ -79,22 +64,16 @@ class ActionCard : public Card {
             }
         }
 
-        bool doesMatch(NumberCard cardOnPile) {
-            if (getColour() == Unknown) { 
-                return true; 
-            } else if (getColour() == cardOnPile.getColour()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        Symbol getSymbol() { return symbol; }
 
-        bool doesMatch(ActionCard cardOnPile) {
+        CardType getCardType() { return cardType; }
+
+        bool doesMatch(Card cardOnPile) {
             if (getColour() == Unknown) { 
-                return true; 
-            } else if (getColour() == cardOnPile.getColour()) {
                 return true;
-            } else if (getActionType() == cardOnPile.getActionType()){
+            } else if (getColour() == cardOnPile.getColour()) {
+                return true; 
+            } else if (getSymbol() == cardOnPile.getSymbol()) {
                 return true;
             } else {
                 return false;
