@@ -21,10 +21,12 @@ enum Colour {
 
 class Card {
     protected:
-        CardType type;
+        const CardType type;
         Colour colour;
 
     public:
+        Card(Colour colour, CardType type) : colour(colour), type(type) {}
+
         virtual bool doesMatch(Card cardOnPile) = 0;
         Colour getColour() { return this->colour; }
         CardType getType() { return this->type; }
@@ -32,14 +34,10 @@ class Card {
 
 class NumberCard : public Card {
     private:
-        int number;
+        const int number;
 
     public:
-        NumberCard(Colour colour, int number) {
-            this->type = Number;
-            this->colour = colour;
-            this->number = number;
-        }
+        NumberCard(Colour colour, int number) : Card(colour, Number), number(number) {}
 
         int getNumber() { return this->number; }
 
@@ -64,22 +62,14 @@ class NumberCard : public Card {
 
 class ActionCard : public Card {
     private:
-        ActionType actionType;
+        const ActionType actionType;
 
     public:
         // Skip, Reverse, Draw2
-        ActionCard(Colour colour, ActionType actionType) {
-            this->type = Action;
-            this->colour = colour;
-            this->actionType = actionType;
-        }
+        ActionCard(Colour colour, ActionType actionType) : Card(colour, Action), actionType(actionType) {}
 
         // Wild, WildDraw4
-        ActionCard(ActionType actionType) {
-            this->type = Action;
-            this->colour = Unknown;
-            this->actionType = actionType;
-        }
+        ActionCard(ActionType actionType) : Card(Unknown, Action), actionType(actionType) {}
 
         int getActionType() { return this->actionType; };
 
