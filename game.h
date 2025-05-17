@@ -1,6 +1,8 @@
 #include "card.h"
 #include <vector>
 #include <memory>
+#include <algorithm>
+#include <random>
 
 class Player {
     private:
@@ -12,14 +14,18 @@ class Player {
         Player(int playerNo, Uno& game) : playerNo(playerNo), game(game) {}
 
         void addCard(std::unique_ptr<Card> cardPointer) {
-            this->deck.push_back(cardPointer);
+            deck.push_back(cardPointer);
         }
 
         void drawCards(int cardCount) {
             for (int i = 0; i < cardCount; i++) {
-                this->deck.push_back(std::move(this->game.getDrawPile().back()));
-                this->game.getDrawPile().pop_back();
-                //...
+                auto& drawPile = game.getDrawPile();
+                deck.push_back(std::move(drawPile.back()));
+                drawPile.pop_back();
+                
+                if (drawPile.empty()) {
+                    game.newDrawPile();
+                }
             }
         }
 
@@ -29,7 +35,7 @@ class Player {
 
         void useCard(std::unique_ptr<Card> cardPointer);
 
-        void useAbility(std::unique_ptr<ActionCard> actionCardPointer);
+        void useAbility(ActionCard actionCard);
 
         void maybeSayUno();
 
@@ -53,11 +59,11 @@ class Uno {
     public:
         Uno(int playerCount) : playerCount(playerCount) {}
 
-        std::vector<Player> getPlayers() { return this->players; }
+        std::vector<Player> getPlayers() { return players; }
 
-        std::vector<std::unique_ptr<Card>> getDrawPile() { return this->drawPile; }
+        std::vector<std::unique_ptr<Card>>& getDrawPile() { return drawPile; }
 
-        std::vector<std::unique_ptr<Card>> getDiscardPile() { return this->discardPile; }
+        std::vector<std::unique_ptr<Card>>& getDiscardPile() { return discardPile; }
 
         void createPlayers();
 
@@ -65,9 +71,19 @@ class Uno {
 
         void setupCards();
 
-        void specialFirstDiscard(std::unique_ptr<ActionCard> actionCardPointer);
+        void specialFirstDiscard(ActionCard actionCard);
 
         void setupGame();
 
-        void newDrawPile();
+        void newDrawPile() {
+            std::swap(discardPile, drawPile);
+
+            discardPile.push_back(std::move(drawPile.back()));
+            drawPile.pop_back();
+
+            std::random_device rand;
+            std::mt19937 g(rand());
+            
+            std::shuffle(drawPile.begin(), drawPile.end(), g);
+        }
 };

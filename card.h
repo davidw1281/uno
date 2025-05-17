@@ -28,8 +28,8 @@ class Card {
         Card(Colour colour, CardType type) : colour(colour), type(type) {}
 
         virtual bool doesMatch(Card cardOnPile) = 0;
-        Colour getColour() { return this->colour; }
-        CardType getType() { return this->type; }
+        Colour getColour() { return colour; }
+        CardType getType() { return type; }
 };
 
 class NumberCard : public Card {
@@ -39,12 +39,12 @@ class NumberCard : public Card {
     public:
         NumberCard(Colour colour, int number) : Card(colour, Number), number(number) {}
 
-        int getNumber() { return this->number; }
+        int getNumber() { return number; }
 
         bool doesMatch(NumberCard cardOnPile) {
-            if (this->getColour() == cardOnPile.getColour()) { 
+            if (getColour() == cardOnPile.getColour()) { 
                 return true; 
-            } else if (this->getNumber() == cardOnPile.getNumber()) {
+            } else if (getNumber() == cardOnPile.getNumber()) {
                 return true;
             } else {
                 return false;
@@ -52,7 +52,7 @@ class NumberCard : public Card {
         }
 
         bool doesMatch(ActionCard cardOnPile) {
-            if (this->getColour() == cardOnPile.getColour()) { 
+            if (getColour() == cardOnPile.getColour()) { 
                 return true; 
             } else {
                 return false;
@@ -71,7 +71,7 @@ class ActionCard : public Card {
         // Wild, WildDraw4
         ActionCard(ActionType actionType) : Card(Unknown, Action), actionType(actionType) {}
 
-        int getActionType() { return this->actionType; };
+        int getActionType() { return actionType; };
 
         void setColour(Colour colour) {
             if (this->colour == Unknown) {
@@ -80,9 +80,9 @@ class ActionCard : public Card {
         }
 
         bool doesMatch(NumberCard cardOnPile) {
-            if (this->getColour() == Unknown) { 
+            if (getColour() == Unknown) { 
                 return true; 
-            } else if (this->getColour() == cardOnPile.getColour()) {
+            } else if (getColour() == cardOnPile.getColour()) {
                 return true;
             } else {
                 return false;
@@ -90,11 +90,11 @@ class ActionCard : public Card {
         }
 
         bool doesMatch(ActionCard cardOnPile) {
-            if (this->getColour() == Unknown) { 
+            if (getColour() == Unknown) { 
                 return true; 
-            } else if (this->getColour() == cardOnPile.getColour()) {
+            } else if (getColour() == cardOnPile.getColour()) {
                 return true;
-            } else if (this->getActionType() == cardOnPile.getActionType()){
+            } else if (getActionType() == cardOnPile.getActionType()){
                 return true;
             } else {
                 return false;
