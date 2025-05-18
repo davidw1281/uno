@@ -1,26 +1,25 @@
 #include "card.h"
 #include <vector>
-#include <memory>
 #include <algorithm>
 #include <random>
 
 class Player {
     private:
         const int playerNo;
-        std::vector<std::unique_ptr<Card>> deck;
+        std::vector<Card> deck;
         Uno& game;
 
     public:
         Player(int playerNo, Uno& game) : playerNo(playerNo), game(game) {}
 
-        void addCard(std::unique_ptr<Card> cardPointer) {
-            deck.push_back(cardPointer);
+        void addCard(Card card) {
+            deck.push_back(card);
         }
 
         void drawCards(int cardCount) {
             for (int i = 0; i < cardCount; i++) {
-                auto& drawPile = game.getDrawPile();
-                deck.push_back(std::move(drawPile.back()));
+                std::vector<Card>& drawPile = game.getDrawPile();
+                deck.push_back(drawPile.back());
                 drawPile.pop_back();
                 
                 if (drawPile.empty()) {
@@ -33,9 +32,9 @@ class Player {
 
         int pickCard();
 
-        void useCard(std::unique_ptr<Card> cardPointer);
+        void useCard(Card card);
 
-        void useAbility(ActionCard actionCard);
+        void useAbility(Card actionCard);
 
         void maybeSayUno();
 
@@ -49,8 +48,8 @@ class Uno {
     private:
         const int playerCount;
         std::vector<Player> players;
-        std::vector<std::unique_ptr<Card>> drawPile;
-        std::vector<std::unique_ptr<Card>> discardPile;
+        std::vector<Card> drawPile;
+        std::vector<Card> discardPile;
         int currentTurn;
         int turnChange;
         bool gameOver;
@@ -61,24 +60,24 @@ class Uno {
 
         std::vector<Player> getPlayers() { return players; }
 
-        std::vector<std::unique_ptr<Card>>& getDrawPile() { return drawPile; }
+        std::vector<Card>& getDrawPile() { return drawPile; }
 
-        std::vector<std::unique_ptr<Card>>& getDiscardPile() { return discardPile; }
+        std::vector<Card>& getDiscardPile() { return discardPile; }
 
         void createPlayers();
 
-        std::vector<std::unique_ptr<Card>> createCards();
+        std::vector<Card> createCards();
 
         void setupCards();
 
-        void specialFirstDiscard(ActionCard actionCard);
+        void specialFirstDiscard(Card actionCard);
 
         void setupGame();
 
         void newDrawPile() {
             std::swap(discardPile, drawPile);
 
-            discardPile.push_back(std::move(drawPile.back()));
+            discardPile.push_back(drawPile.back());
             drawPile.pop_back();
 
             std::random_device rand;
