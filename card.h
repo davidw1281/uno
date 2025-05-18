@@ -69,14 +69,20 @@ class Card {
         CardType getCardType() { return cardType; }
 
         bool doesMatch(Card cardOnPile) {
-            if (getColour() == Unknown) { 
+            if (colour == Unknown) { 
                 return true;
-            } else if (getColour() == cardOnPile.getColour()) {
+            } else if (colour == cardOnPile.getColour()) {
                 return true; 
-            } else if (getSymbol() == cardOnPile.getSymbol()) {
+            } else if (symbol == cardOnPile.getSymbol()) {
                 return true;
             } else {
                 return false;
             }
+        }
+
+        bool operator==(const Card& otherCard) const {
+            return colour == otherCard.colour
+                && symbol == otherCard.symbol
+                && cardType == otherCard.cardType;
         }
 };
