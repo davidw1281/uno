@@ -31,7 +31,7 @@ enum CardType {
 
 
 class Card {
-    protected:
+    private:
         Colour colour;
         const Symbol symbol;
         CardType cardType;

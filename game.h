@@ -201,6 +201,12 @@ class Uno {
             nextPlayer.drawCards(cardCount);
         }
 
+        void shuffleCards(std::vector<Card>& cards) {
+            std::random_device rand;
+            std::mt19937 g(rand());
+            std::shuffle(cards.begin(), cards.end(), g);
+        }
+
         void createPlayers() {
             for (int i = 1; i <= playerCount; i++) {
                 players.push_back(Player(i, *this));
@@ -229,10 +235,7 @@ class Uno {
                 cards.push_back(Card(WildDraw4));
             }
 
-            std::random_device rand;
-            std::mt19937 g(rand());
-            std::shuffle(cards.begin(), cards.end(), g);
-
+            shuffleCards(cards);
             return cards;
         }
 
@@ -273,9 +276,7 @@ class Uno {
                     drawPile.push_back(discardPile.back());
                     discardPile.pop_back();
 
-                    std::random_device rand;
-                    std::mt19937 g(rand());
-                    std::shuffle(drawPile.begin(), drawPile.end(), g);
+                    shuffleCards(drawPile);
 
                     discardPile.push_back(drawPile.back());
                     drawPile.pop_back();
@@ -298,9 +299,7 @@ class Uno {
             discardPile.push_back(drawPile.back());
             drawPile.pop_back();
 
-            std::random_device rand;
-            std::mt19937 g(rand());
-            std::shuffle(drawPile.begin(), drawPile.end(), g);
+            shuffleCards(drawPile);
         }
 
         void runGame() {
