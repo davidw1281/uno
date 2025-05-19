@@ -56,7 +56,9 @@ class Card {
             cardType = Action;
         }
 
-        Colour getColour() { return colour; }
+        Colour getColour() { 
+            return colour; 
+        }
 
         void setColour(Colour colour) {
             if (this->colour == Unknown) {
@@ -64,9 +66,13 @@ class Card {
             }
         }
 
-        Symbol getSymbol() { return symbol; }
+        Symbol getSymbol() { 
+            return symbol; 
+        }
 
-        CardType getCardType() { return cardType; }
+        CardType getCardType() { 
+            return cardType; 
+        }
 
         bool doesMatch(Card cardOnPile) {
             if (colour == Unknown) { 

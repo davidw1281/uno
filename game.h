@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include <print>
 
 class Player {
     private:
@@ -21,6 +22,17 @@ class Player {
             if (it != deck.end()) {
                 deck.erase(it);
             }
+        }
+
+        void setColour(Card& wildCard) {
+            std::vector<Colour> colours = { Red, Blue, Yellow, Green };
+            std::random_device rand;
+            std::mt19937 g(rand());
+            std::uniform_int_distribution<> dist(0, 3);
+            int colourIndex = dist(g);
+
+            Colour newColour = colours[colourIndex];
+            wildCard.setColour(newColour);
         }
 
         void drawCards(int cardCount) {
@@ -89,12 +101,6 @@ class Player {
         }
 
         void useAbility(Card& actionCard) {
-            std::vector<Colour> colours = { Red, Blue, Yellow, Green };
-            std::random_device rand;
-            std::mt19937 g(rand());
-            std::uniform_int_distribution<> dist(0, 3);
-            int colourIndex = dist(g);
-
             switch (actionCard.getSymbol()) {
                 case Skip:
                     game.nextTurn();
@@ -104,16 +110,16 @@ class Player {
                     break;
                 case Draw2:
                     game.nextPlayerDrawCards(2);
+                    game.nextTurn();
                     break;
                 case Wild:
-                    Colour newColour = colours[colourIndex];
-                    actionCard.setColour(newColour);
+                    setColour(actionCard);
                     break;
                 case WildDraw4:
-                    Colour newColour = colours[colourIndex];
-                    actionCard.setColour(newColour);
+                    setColour(actionCard);
 
                     game.nextPlayerDrawCards(4);
+                    game.nextTurn();
                     break;
             }
         }
@@ -158,11 +164,17 @@ class Uno {
     public:
         Uno(int playerCount) : playerCount(playerCount) {}
 
-        std::vector<Player> getPlayers() { return players; }
+        std::vector<Player> getPlayers() { 
+            return players; 
+        }
 
-        std::vector<Card>& getDrawPile() { return drawPile; }
+        std::vector<Card>& getDrawPile() { 
+            return drawPile; 
+        }
 
-        std::vector<Card>& getDiscardPile() { return discardPile; }
+        std::vector<Card>& getDiscardPile() { 
+            return discardPile; 
+        }
 
         void reverseTurnDirection() {
             turnChange *= -1;
@@ -178,15 +190,96 @@ class Uno {
             nextPlayer.drawCards(cardCount);
         }
 
-        void createPlayers();
+        void createPlayers() {
+            for (int i = 1; i <= playerCount; i++) {
+                players.push_back(Player(i, *this));
+            }
+        }
 
-        std::vector<Card> createCards();
+        std::vector<Card> createCards() {
+            std::vector<Card> cards;
+            std::vector<Colour> colours = { Red, Blue, Yellow, Green };
+            std::vector<Symbol> symbols = { One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Skip, Reverse, Draw2 };
 
-        void setupCards();
+            for (Colour colour : colours) {
+                cards.push_back(Card(colour, Zero));
+            }
 
-        void specialFirstDiscard(Card actionCard);
+            for (Symbol symbol : symbols) {
+                for (Colour colour : colours) {
+                    for (int count = 0; count < 2; count++) {
+                        cards.push_back(Card(colour, symbol));
+                    }
+                }
+            }
 
-        void setupGame();
+            for (int count = 0; count < 4; count++) {
+                cards.push_back(Card(Wild));
+                cards.push_back(Card(WildDraw4));
+            }
+
+            std::random_device rand;
+            std::mt19937 g(rand());
+            std::shuffle(cards.begin(), cards.end(), g);
+
+            return cards;
+        }
+
+        void setupCards(std::vector<Card> cards) {
+            for (int count = 0; count < 7; count++) {
+                for (Player& player : players) {
+                    player.addCard(cards.back());
+                    cards.pop_back();
+                }
+            }
+
+            drawPile = cards;
+            discardPile.push_back(drawPile.back());
+            drawPile.pop_back();
+
+            if (discardPile.back().getCardType() == Action) {
+                specialFirstDiscard(discardPile.back());
+            }
+        }
+
+        void specialFirstDiscard(Card& actionCard) {
+            switch (actionCard.getSymbol()) {
+                case Skip:
+                    nextTurn();
+                    break;
+                case Reverse:
+                    reverseTurnDirection();
+                    nextTurn();
+                    break;
+                case Draw2:
+                    players[0].drawCards(2);
+                    nextTurn();
+                    break;
+                case Wild:
+                    players[0].setColour(actionCard);
+                    break;
+                case WildDraw4:
+                    drawPile.push_back(discardPile.back());
+                    discardPile.pop_back();
+
+                    std::random_device rand;
+                    std::mt19937 g(rand());
+                    std::shuffle(drawPile.begin(), drawPile.end(), g);
+
+                    discardPile.push_back(drawPile.back());
+                    drawPile.pop_back();
+
+                    if (discardPile.back().getCardType() == Action) {
+                        specialFirstDiscard(discardPile.back());
+                    }
+                    break;
+            }
+        }
+
+        void setupGame() {
+            createPlayers();
+            setupCards(createCards());
+        }
 
         void newDrawPile() {
             std::swap(discardPile, drawPile);
@@ -196,11 +289,20 @@ class Uno {
 
             std::random_device rand;
             std::mt19937 g(rand());
-            
             std::shuffle(drawPile.begin(), drawPile.end(), g);
         }
 
-        void runGame();
+        void runGame() {
+            setupGame();
+
+            while (!gameOver) {
+                Player currentPlayer = players[currentTurnIndex];
+                currentPlayer.runTurn();
+                nextTurn();
+            }
+
+            std::println("Player {} wins", winner);
+        }
 
         void gameWon(int playerNo) {
             gameOver = true;
