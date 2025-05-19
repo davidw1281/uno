@@ -29,12 +29,14 @@ void Player::removeCard(Card card) {
 void Player::displayDeck() {
     std::cout << "Player " << playerNo << "'s deck: [";
 
-    for (int i = 0; i < deck.size() - 1; i++) {
-        deck[i].displayCard();
-        std::cout << ", ";
-    }
+    if (!deck.empty()) {
+        for (int i = 0; i < deck.size() - 1; i++) {
+            deck[i].displayCard();
+            std::cout << ", ";
+        }
 
-    deck[deck.size() - 1].displayCard();
+        deck[deck.size() - 1].displayCard();
+    }
     std::cout << "]" << "\n";
 }
 
@@ -314,5 +316,5 @@ void Uno::runGame() {
         nextTurn();
     }
 
-    std::cout << "Player " << winner << " wins\n";
+    std::cout << "Player " << winner << " wins!\n";
 }

@@ -95,11 +95,11 @@ class Card {
 
             switch (symbol) {
                 case Wild:
-                    std::cout << "Wild" << colours[colour];
+                    std::cout << "Wild " << colours[colour];
                     break;
 
                 case WildDraw4:
-                    std::cout << "Wild +4" << colours[colour];
+                    std::cout << "Wild +4 " << colours[colour];
                     break;
 
                 case Skip:
