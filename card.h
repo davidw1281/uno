@@ -1,3 +1,7 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
 enum Colour {
     Red,
     Blue,
@@ -33,7 +37,7 @@ enum CardType {
 class Card {
     private:
         Colour colour;
-        const Symbol symbol;
+        Symbol symbol;
         CardType cardType;
 
     public:
@@ -83,6 +87,35 @@ class Card {
                 return true;
             } else {
                 return false;
+            }
+        }
+
+        void displayCard() {
+            std::vector<std::string> colours = { "Red", "Blue", "Yellow", "Green", "Unknown" };
+
+            switch (symbol) {
+                case Wild:
+                    std::cout << "Wild" << colours[colour];
+                    break;
+
+                case WildDraw4:
+                    std::cout << "Wild +4" << colours[colour];
+                    break;
+
+                case Skip:
+                    std::cout << colours[colour] << " Skip";
+                    break;
+
+                case Reverse:
+                    std::cout << colours[colour] << " Reverse";
+                    break;
+
+                case Draw2:
+                    std::cout << colours[colour] << " +2";
+                    break;
+
+                default:
+                    std::cout << colours[colour] << " " << symbol;
             }
         }
 };
