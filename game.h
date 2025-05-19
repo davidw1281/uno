@@ -146,6 +146,10 @@ class Player {
             } 
         }
 
+        void gameWon() {
+            game.gameWon(playerNo);
+        }
+
         void runTurn() {
             int cardIndex = pickCardIndex();
             if (cardIndex != -1) {
@@ -153,10 +157,6 @@ class Player {
             } else {
                 drawCardNoMatch();
             }
-        }
-
-        void gameWon() {
-            game.gameWon(playerNo);
         }
 };
 
@@ -302,6 +302,11 @@ class Uno {
             shuffleCards(drawPile);
         }
 
+        void gameWon(int playerNo) {
+            gameOver = true;
+            winner = playerNo;
+        }
+
         void runGame() {
             setupGame();
 
@@ -312,10 +317,5 @@ class Uno {
             }
 
             std::println("Player {} wins", winner);
-        }
-
-        void gameWon(int playerNo) {
-            gameOver = true;
-            winner = playerNo;
         }
 };
