@@ -85,10 +85,4 @@ class Card {
                 return false;
             }
         }
-
-        bool operator==(const Card& otherCard) const {
-            return colour == otherCard.colour
-                && symbol == otherCard.symbol
-                && cardType == otherCard.cardType;
-        }
 };

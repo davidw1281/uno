@@ -18,9 +18,20 @@ class Player {
         }
 
         void removeCard(Card card) {
-            auto it = std::find(deck.begin(), deck.end(), card);
-            if (it != deck.end()) {
-                deck.erase(it);
+            int removeCardIndex = -1;
+            Colour colour = card.getColour();
+            Symbol symbol = card.getSymbol();
+            CardType cardType = card.getCardType();
+
+            for (int i = 0; i < deck.size(); i++) {
+                if (colour == deck[i].getColour() && symbol == deck[i].getSymbol() && cardType == deck[i].getCardType()) {
+                    removeCardIndex = i;
+                    break;
+                }
+            }
+
+            if (removeCardIndex != -1) {
+                deck.erase(deck.begin() + removeCardIndex);
             }
         }
 
