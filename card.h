@@ -1,4 +1,3 @@
-#include <iostream>
 #include <vector>
 #include <string>
 
@@ -90,32 +89,27 @@ class Card {
             }
         }
 
-        void displayCard() {
+        std::string displayCard() {
             std::vector<std::string> colours = { "Red", "Blue", "Yellow", "Green", "Unknown" };
 
             switch (symbol) {
                 case Wild:
-                    std::cout << "Wild " << colours[colour];
-                    break;
+                    return "Wild " + colours[colour];
 
                 case WildDraw4:
-                    std::cout << "Wild +4 " << colours[colour];
-                    break;
+                    return "Wild +4 " + colours[colour];
 
                 case Skip:
-                    std::cout << colours[colour] << " Skip";
-                    break;
+                    return colours[colour] + " Skip";
 
                 case Reverse:
-                    std::cout << colours[colour] << " Reverse";
-                    break;
+                    return colours[colour] + " Reverse";
 
                 case Draw2:
-                    std::cout << colours[colour] << " +2";
-                    break;
+                    return colours[colour] + " +2";
 
                 default:
-                    std::cout << colours[colour] << " " << symbol;
+                    return colours[colour] + " " + std::to_string(symbol);
             }
         }
 };

@@ -15,7 +15,7 @@ class Player {
 
         void removeCard(Card card);
 
-        void displayDeck();
+        std::string displayDeck();
 
         void setColour(Card& wildCard);
 

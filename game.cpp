@@ -1,6 +1,7 @@
 #include "game.h"
 #include <random>
 #include <algorithm>
+#include <iostream>
 
 Player::Player(int playerNo, Uno& game) : playerNo(playerNo), game(game) {}
 
@@ -26,18 +27,19 @@ void Player::removeCard(Card card) {
     }
 }
 
-void Player::displayDeck() {
-    std::cout << "Player " << playerNo << "'s deck: [";
+std::string Player::displayDeck() {
+    std::string deckString = "Player " + std::to_string(playerNo) + "'s deck: [";
 
     if (!deck.empty()) {
         for (int i = 0; i < deck.size() - 1; i++) {
-            deck[i].displayCard();
-            std::cout << ", ";
+            deckString += deck[i].displayCard() + ", ";
         }
 
-        deck[deck.size() - 1].displayCard();
+        deckString += deck[deck.size() - 1].displayCard();
     }
-    std::cout << "]" << "\n";
+
+    deckString += "]\n";
+    return deckString;
 }
 
 void Player::setColour(Card& wildCard) {
@@ -68,10 +70,13 @@ void Player::drawCardNoMatch() {
     Card cardOnDrawPile = drawPile.back();
     drawPile.pop_back();
 
+    std::cout << "No matching cards! Card drawn: " << cardOnDrawPile.displayCard() << "\n";
+
     if (cardOnDrawPile.doesMatch(game.getDiscardPile().back())) {
         useCard(cardOnDrawPile);
     } else {
         addCard(cardOnDrawPile);
+        std::cout << displayDeck();
     }
 
     if (drawPile.empty()) {
@@ -92,10 +97,10 @@ int Player::pickCardIndex() {
 }
 
 void Player::useCard(Card card) {
-    removeCard(card);
+    std::cout << "Card used: " << card.displayCard() << "\n";
 
-    std::cout << "New deck: ";
-    displayDeck();
+    removeCard(card);
+    std::cout << displayDeck();
 
     std::vector<Card>& discardPile = game.getDiscardPile();
     discardPile.push_back(card);
@@ -149,7 +154,9 @@ void Player::maybeSayUno() {
 
     int didNotSayUno = dist(g);
     if (didNotSayUno == 1) {
+        std::cout << "Player " << playerNo << " didn't say Uno! Draw 2 cards...\n";
         drawCards(2);
+        std::cout << displayDeck();
     } 
 }
 
@@ -159,10 +166,8 @@ void Player::gameWon() {
 
 void Player::runTurn() {
     std::cout << "Player " << playerNo << "'s turn\n";
-    std::cout << "Card on top: ";
-    game.getDiscardPile().back().displayCard();
-    std::cout << "\n";
-    displayDeck();
+    std::cout << "Card on top: " << game.getDiscardPile().back().displayCard() << "\n";
+    std::cout << displayDeck();
 
     int cardIndex = pickCardIndex();
     if (cardIndex != -1) {
@@ -170,6 +175,8 @@ void Player::runTurn() {
     } else {
         drawCardNoMatch();
     }
+
+    std::cout << "\n";
 }
 
 Uno::Uno(int playerCount) : playerCount(playerCount) {}
@@ -192,13 +199,11 @@ void Uno::reverseTurnDirection() {
 
 void Uno::nextTurn() {
     currentTurnIndex = (currentTurnIndex + turnChange + playerCount) % playerCount;
-    std::cout << "New CurrentTurnIndex: " << currentTurnIndex << "\n\n";
 }
 
 void Uno::nextPlayerDrawCards(int cardCount) {
     int nextTurnIndex = (currentTurnIndex + turnChange + playerCount) % playerCount;
-    Player nextPlayer = players[nextTurnIndex];
-    nextPlayer.drawCards(cardCount);
+    players[nextTurnIndex].drawCards(cardCount);
 }
 
 void Uno::shuffleCards(std::vector<Card>& cards) {
@@ -257,6 +262,8 @@ void Uno::setupCards(std::vector<Card> cards) {
 }
 
 void Uno::specialFirstDiscard(Card& actionCard) {
+    std::cout << "Special first card: " << actionCard.displayCard() << "\n";
+
     switch (actionCard.getSymbol()) {
         case Skip:
             nextTurn();
@@ -311,7 +318,6 @@ void Uno::runGame() {
     setupGame();
 
     while (!gameOver) {
-        std::cout << "CurrentTurnIndex: " << currentTurnIndex << "\n";
         players[currentTurnIndex].runTurn();
         nextTurn();
     }
