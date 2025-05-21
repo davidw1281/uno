@@ -129,7 +129,11 @@ void Player::useAbility(Card& actionCard) {
             game.nextTurn();
             break;
         case Reverse:
-            game.reverseTurnDirection();
+            if (game.getPlayerCount() == 2) {
+                game.nextTurn();
+            } else {
+                game.reverseTurnDirection();
+            }
             break;
         case Draw2:
             game.nextPlayerDrawCards(2);
@@ -180,6 +184,10 @@ void Player::runTurn() {
 }
 
 Uno::Uno(int playerCount) : playerCount(playerCount) {}
+
+int Uno::getPlayerCount() {
+    return playerCount;
+}
 
 std::vector<Player> Uno::getPlayers() { 
     return players; 
@@ -245,7 +253,7 @@ std::vector<Card> Uno::createCards() {
 }
 
 void Uno::setupCards(std::vector<Card> cards) {
-    for (int count = 0; count < 2; count++) {
+    for (int count = 0; count < 7; count++) {
         for (Player& player : players) {
             player.addCard(cards.back());
             cards.pop_back();
@@ -262,7 +270,7 @@ void Uno::setupCards(std::vector<Card> cards) {
 }
 
 void Uno::specialFirstDiscard(Card& actionCard) {
-    std::cout << "Special first card: " << actionCard.displayCard() << "\n";
+    std::cout << "Special first card: " << actionCard.displayCard() << "\n\n";
 
     switch (actionCard.getSymbol()) {
         case Skip:

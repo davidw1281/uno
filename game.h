@@ -50,6 +50,8 @@ class Uno {
     public:
         Uno(int playerCount);
 
+        int getPlayerCount();
+
         std::vector<Player> getPlayers();
 
         std::vector<Card>& getDrawPile();
